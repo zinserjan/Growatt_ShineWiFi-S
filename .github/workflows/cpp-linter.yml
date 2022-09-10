@@ -1,0 +1,27 @@
+name: cpp-linter
+
+on:
+  push:
+    paths: "SRC/ShineWiFi-ModBus/**"
+  pull_request:
+    paths: "SRC/ShineWiFi-ModBus/**"
+
+jobs:
+  cpp-linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Linter
+        uses: cpp-linter/cpp-linter-action@v2.1.0
+        id: linter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          style: file
+          extensions: c,h,cpp,ino
+          files-changed-only: true
+          thread-comments: false
+          file-annotations: true
+      - name: Fail fast?!
+        if: steps.linter.outputs.checks-failed > 0
+        run: exit 1
